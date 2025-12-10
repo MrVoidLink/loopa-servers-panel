@@ -1,6 +1,6 @@
 import rateLimit from 'express-rate-limit'
 import { Router } from 'express'
-import { authGuard } from '../middleware/auth'
+import { authGuard, type AuthedRequest } from '../middleware/auth'
 import { issueToken, verifyCredentials } from '../services/authService'
 import { loadData } from '../services/store'
 
@@ -23,8 +23,9 @@ router.post('/login', limiter, async (req, res) => {
 })
 
 router.get('/me', authGuard, async (req, res) => {
+  const authed = req as AuthedRequest
   const data = await loadData()
-  const user = data.users.find((u) => u.username === req.user?.username)
+  const user = data.users.find((u) => u.username === authed.user?.username)
   if (!user) return res.status(404).json({ error: 'user not found' })
   return res.json({ username: user.username })
 })
