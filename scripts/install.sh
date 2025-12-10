@@ -30,6 +30,25 @@ install_node_if_missing() {
   fi
 }
 
+ensure_node_version() {
+  if ! need_command node; then
+    return
+  fi
+  node_version="$(node -v | sed 's/^v//')"
+  node_major="${node_version%%.*}"
+  if [[ "${node_major}" -ge 20 ]]; then
+    return
+  fi
+  echo "[install] Node ${node_version} detected (<20). Attempting Node 20 via NodeSource..."
+  if need_command curl && need_command apt-get; then
+    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+  else
+    echo "[install] Cannot auto-upgrade Node (need curl + apt-get). Please install Node 20+ manually."
+    exit 1
+  fi
+}
+
 random_secret() {
   if command -v openssl >/dev/null 2>&1; then
     openssl rand -hex 32
@@ -56,6 +75,7 @@ EOF
 }
 
 install_node_if_missing
+ensure_node_version
 
 echo "[install] installing frontend deps..."
 cd "$FRONT_DIR"
