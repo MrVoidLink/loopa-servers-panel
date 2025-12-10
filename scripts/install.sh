@@ -114,6 +114,13 @@ if [[ -f "$BACK_DIR/.env" ]]; then
 fi
 
 frontend_path="$FRONT_DIR/dist"
+server_ip="$(hostname -I 2>/dev/null | awk '{print $1}')"
+if [[ -z "$server_ip" ]]; then
+  server_ip="$(ip route get 1.1.1.1 2>/dev/null | awk '/src/ {print $7; exit}')"
+fi
+if [[ -z "$server_ip" ]]; then
+  server_ip="localhost"
+fi
 
 maybe_systemd=0
 if command -v systemctl >/dev/null 2>&1; then
@@ -183,9 +190,9 @@ echo "[install] summary"
 printf -- '---------------------------------------------------------------------\n'
 printf '%-12s | %-12s | %-10s | %-30s\n' "Service" "Status" "Port" "Info / URL"
 printf -- '---------------------------------------------------------------------\n'
-printf '%-12s | %-12s | %-10s | %-30s\n' "frontend" "running" "$FRONT_PORT" "http://<server-ip>:${FRONT_PORT}"
-printf '%-12s | %-12s | %-10s | %-30s\n' "backend" "running" "$backend_port" "http://<server-ip>:${backend_port}"
-printf '%-12s | %-12s | %-10s | %-30s\n' "health" "ready" "$backend_port" "curl http://<server-ip>:${backend_port}/health"
+printf '%-12s | %-12s | %-10s | %-30s\n' "frontend" "running" "$FRONT_PORT" "http://${server_ip}:${FRONT_PORT}"
+printf '%-12s | %-12s | %-10s | %-30s\n' "backend" "running" "$backend_port" "http://${server_ip}:${backend_port}"
+printf '%-12s | %-12s | %-10s | %-30s\n' "health" "ready" "$backend_port" "curl http://${server_ip}:${backend_port}/health"
 printf -- '---------------------------------------------------------------------\n'
 if [[ "$maybe_systemd" -eq 1 && "$EUID" -eq 0 ]]; then
   echo "[install] services: systemctl status loopa-backend loopa-frontend"
