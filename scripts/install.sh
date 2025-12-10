@@ -7,7 +7,9 @@ BACK_DIR="$ROOT_DIR/backend"
 
 : "${PORT:=4000}"
 : "${CORS_ORIGIN:=http://localhost:5173}"
+: "${FRONT_PORT:=4173}"
 : "${DATA_FILE:=data/app.json}"
+: "${RUN_AS_USER:=$(id -un)}"
 
 need_command() {
   if command -v "$1" >/dev/null 2>&1; then
@@ -84,6 +86,11 @@ npm install
 echo "[install] building frontend..."
 npm run build
 
+echo "[install] installing static server (serve)..."
+if ! command -v serve >/dev/null 2>&1; then
+  npm install -g serve
+fi
+
 echo "[install] installing backend deps..."
 cd "$BACK_DIR"
 npm install
@@ -107,13 +114,82 @@ fi
 
 frontend_path="$FRONT_DIR/dist"
 
+maybe_systemd=0
+if command -v systemctl >/dev/null 2>&1; then
+  maybe_systemd=1
+fi
+
+backend_unit="/etc/systemd/system/loopa-backend.service"
+frontend_unit="/etc/systemd/system/loopa-frontend.service"
+
+if [[ "$maybe_systemd" -eq 1 ]] && [[ "$EUID" -eq 0 ]]; then
+  echo "[install] creating systemd service for backend..."
+  cat >"$backend_unit" <<EOF
+[Unit]
+Description=Loopa Backend
+After=network.target
+
+[Service]
+Type=simple
+User=$RUN_AS_USER
+WorkingDirectory=$BACK_DIR
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/env bash -c 'cd "$BACK_DIR" && npm start'
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+  echo "[install] creating systemd service for frontend (serve -s dist)..."
+  cat >"$frontend_unit" <<EOF
+[Unit]
+Description=Loopa Frontend (serve)
+After=network.target
+
+[Service]
+Type=simple
+User=$RUN_AS_USER
+WorkingDirectory=$FRONT_DIR
+ExecStart=/usr/bin/env bash -c 'cd "$FRONT_DIR" && serve -s "$frontend_path" -l $FRONT_PORT'
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+  systemctl daemon-reload
+  systemctl enable loopa-backend.service
+  systemctl enable loopa-frontend.service
+  systemctl restart loopa-backend.service
+  systemctl restart loopa-frontend.service
+else
+  echo "[install] systemd not available or not running as root; starting with nohup..."
+  cd "$BACK_DIR"
+  nohup npm start >/tmp/loopa-backend.log 2>&1 &
+  backend_pid=$!
+
+  echo "[install] starting frontend static server..."
+  cd "$FRONT_DIR"
+  nohup serve -s "$frontend_path" -l "$FRONT_PORT" >/tmp/loopa-frontend.log 2>&1 &
+  frontend_pid=$!
+fi
+
 echo ""
 echo "[install] summary"
 printf -- '---------------------------------------------------------------------\n'
 printf '%-12s | %-12s | %-10s | %-30s\n' "Service" "Status" "Port" "Info / URL"
 printf -- '---------------------------------------------------------------------\n'
-printf '%-12s | %-12s | %-10s | %-30s\n' "frontend" "built" "-" "$frontend_path (serve statically)"
-printf '%-12s | %-12s | %-10s | %-30s\n' "backend" "built" "$backend_port" "start: cd backend && npm start"
-printf '%-12s | %-12s | %-10s | %-30s\n' "health" "ready" "$backend_port" "curl http://localhost:${backend_port}/health"
+printf '%-12s | %-12s | %-10s | %-30s\n' "frontend" "running" "$FRONT_PORT" "http://<server-ip>:${FRONT_PORT}"
+printf '%-12s | %-12s | %-10s | %-30s\n' "backend" "running" "$backend_port" "http://<server-ip>:${backend_port}"
+printf '%-12s | %-12s | %-10s | %-30s\n' "health" "ready" "$backend_port" "curl http://<server-ip>:${backend_port}/health"
 printf -- '---------------------------------------------------------------------\n'
-echo "[install] done. Serve frontend dist/ (nginx/any static server) and proxy /api -> http://localhost:${backend_port}."
+if [[ "$maybe_systemd" -eq 1 && "$EUID" -eq 0 ]]; then
+  echo "[install] services: systemctl status loopa-backend loopa-frontend"
+else
+  echo "[install] backend pid: ${backend_pid:-manual} (logs: /tmp/loopa-backend.log)"
+  echo "[install] frontend pid: ${frontend_pid:-manual} (logs: /tmp/loopa-frontend.log)"
+fi
+echo "[install] done. Frontend: http://<server-ip>:${FRONT_PORT} | Backend: http://<server-ip>:${backend_port}"
