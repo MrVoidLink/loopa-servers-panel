@@ -1,0 +1,95 @@
+@import 'tailwindcss';
+
+:root {
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont,
+    sans-serif;
+  font-weight: 400;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #000;
+  color: #f7f7f7;
+}
+
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+  --surface-root: #000000;
+  --surface-topbar: rgba(0, 0, 0, 0.85);
+  --surface-sidebar: #050505;
+  --surface-button: #0f0f0f;
+  --surface-input: #050505;
+  --surface-hover: rgba(255, 255, 255, 0.04);
+  --surface-icon: #0c0c0c;
+  --surface-badge: rgba(255, 255, 255, 0.06);
+  --surface-card: #0a0a0a;
+  --surface-glass: rgba(4, 4, 4, 0.85);
+  --surface-overlay: rgba(0, 0, 0, 0.6);
+  --indicator-muted: rgba(255, 255, 255, 0.3);
+
+  --text-primary: #f7f7f7;
+  --text-secondary: #d3d3d3;
+  --text-muted: #8d8d8d;
+  --text-subtle: #a5a5a5;
+
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --border-interactive: rgba(99, 102, 241, 0.7);
+  --border-glass: rgba(255, 255, 255, 0.08);
+
+  --shadow-card: 0 25px 45px rgba(0, 0, 0, 0.65);
+  --shadow-card-hover: 0 30px 55px rgba(0, 0, 0, 0.8);
+  --shadow-glass: 0 35px 60px rgba(0, 0, 0, 0.7);
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+  --surface-root: #f5f7fb;
+  --surface-topbar: rgba(255, 255, 255, 0.88);
+  --surface-sidebar: rgba(247, 249, 255, 0.96);
+  --surface-button: rgba(255, 255, 255, 0.92);
+  --surface-input: #ffffff;
+  --surface-hover: rgba(79, 70, 229, 0.12);
+  --surface-icon: rgba(227, 231, 244, 0.95);
+  --surface-badge: rgba(226, 230, 247, 0.9);
+  --surface-card: #ffffff;
+  --surface-glass: rgba(255, 255, 255, 0.9);
+  --surface-overlay: rgba(15, 23, 42, 0.25);
+  --indicator-muted: rgba(102, 112, 133, 0.45);
+
+  --text-primary: #1c1f2d;
+  --text-secondary: #2f3442;
+  --text-muted: #61677c;
+  --text-subtle: #73788d;
+
+  --border-subtle: rgba(226, 232, 240, 0.75);
+  --border-strong: rgba(154, 169, 194, 0.95);
+  --border-interactive: rgba(79, 70, 229, 0.75);
+  --border-glass: rgba(195, 206, 229, 0.7);
+
+  --shadow-card: 0 15px 35px rgba(25, 42, 74, 0.12);
+  --shadow-card-hover: 0 24px 45px rgba(79, 70, 229, 0.16);
+  --shadow-glass: 0 22px 45px rgba(23, 38, 64, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--surface-root);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 0.95rem;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
