@@ -1,4 +1,5 @@
-const API_BASE = import.meta.env.VITE_API_BASE ?? '/api'
+const fallbackApiBase = `${window.location.protocol}//${window.location.hostname}:4000/api`
+const API_BASE = import.meta.env.VITE_API_BASE ?? fallbackApiBase
 
 async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
