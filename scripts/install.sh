@@ -9,6 +9,27 @@ BACK_DIR="$ROOT_DIR/backend"
 : "${CORS_ORIGIN:=http://localhost:5173}"
 : "${DATA_FILE:=data/app.json}"
 
+need_command() {
+  if command -v "$1" >/dev/null 2>&1; then
+    return 0
+  fi
+  return 1
+}
+
+install_node_if_missing() {
+  if need_command npm && need_command node; then
+    return
+  fi
+  echo "[install] npm/node not found. Attempting apt-based install..."
+  if need_command apt-get; then
+    sudo apt-get update -y
+    sudo apt-get install -y nodejs npm
+  else
+    echo "[install] apt-get not available. Please install Node.js >=18 manually, then re-run."
+    exit 1
+  fi
+}
+
 random_secret() {
   if command -v openssl >/dev/null 2>&1; then
     openssl rand -hex 32
@@ -33,6 +54,8 @@ DATA_FILE=$DATA_FILE
 EOF
   echo "[install] wrote $env_file"
 }
+
+install_node_if_missing
 
 echo "[install] installing frontend deps..."
 cd "$FRONT_DIR"

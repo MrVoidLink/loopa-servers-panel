@@ -2,9 +2,9 @@
 
 Frontend: React + Vite + TS. Backend: Express + TS (in `backend/`).
 
-## One-line install (dev/build both)
+## One-line install (clone + install + build)
 ```bash
-bash scripts/install.sh
+git clone https://github.com/MrVoidLink/loopa-servers-panel.git && cd loopa-servers-panel && bash scripts/install.sh
 ```
 
 ## Backend
