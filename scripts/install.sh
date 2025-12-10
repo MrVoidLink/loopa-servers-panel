@@ -94,6 +94,6 @@ printf '%-12s | %-12s | %-10s | %-30s\n' "Service" "Status" "Port" "Info / URL"
 printf '---------------------------------------------------------------------\n'
 printf '%-12s | %-12s | %-10s | %-30s\n' "frontend" "built" "-" "$frontend_path (serve statically)"
 printf '%-12s | %-12s | %-10s | %-30s\n' "backend" "built" "$backend_port" "start: cd backend && npm start"
-printf '%-12s | %-12s | %-10s | %-30s\n' "health" "ready" "$backend_port" "curl http://localhost:'$backend_port'/health"
+printf '%-12s | %-12s | %-10s | %-30s\n' "health" "ready" "$backend_port" "curl http://localhost:${backend_port}/health"
 printf '---------------------------------------------------------------------\n'
 echo "[install] done. Serve frontend dist/ (nginx/any static server) and proxy /api -> http://localhost:${backend_port}."
