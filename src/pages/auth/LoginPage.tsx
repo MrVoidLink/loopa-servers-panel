@@ -1,6 +1,6 @@
 import "../../App.css"
 import { useEffect, useState } from "react"
-import { Link, useLocation, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { loginRequest, setupStatusRequest } from "../../app/api"
 import { setToken } from "../../app/auth/auth"
 
@@ -115,7 +115,7 @@ export function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 type="password"
                 autoComplete="current-password"
-                placeholder="••••••••"
+                placeholder="********"
                 className="mt-2 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-input)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--border-interactive)] focus:outline-none"
               />
             </div>
@@ -136,7 +136,7 @@ export function LoginPage() {
               disabled={loading}
               className="w-full rounded-lg bg-gradient-to-r from-indigo-500 via-sky-500 to-emerald-400 py-2 text-sm font-semibold text-black transition hover:opacity-90 disabled:opacity-60"
             >
-              {loading ? "Signing in…" : "Continue"}
+              {loading ? "Signing in..." : "Continue"}
             </button>
           </form>
           {error ? (

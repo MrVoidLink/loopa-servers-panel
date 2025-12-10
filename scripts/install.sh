@@ -77,4 +77,23 @@ echo "[install] ensuring data directory..."
 mkdir -p "$(dirname "$DATA_FILE")"
 chmod 700 "$(dirname "$DATA_FILE")" 2>/dev/null || true
 
-echo "[install] done. Backend start: cd backend && npm start (PORT=$PORT). Serve frontend dist/ with nginx or any static server; proxy /api to PORT."
+backend_port="$PORT"
+if [[ -f "$BACK_DIR/.env" ]]; then
+  env_port="$(grep -E '^PORT=' "$BACK_DIR/.env" | tail -n1 | cut -d'=' -f2)"
+  if [[ -n "$env_port" ]]; then
+    backend_port="$env_port"
+  fi
+fi
+
+frontend_path="$FRONT_DIR/dist"
+
+echo ""
+echo "[install] summary"
+printf '---------------------------------------------------------------------\n'
+printf '%-12s | %-12s | %-10s | %-30s\n' "Service" "Status" "Port" "Info / URL"
+printf '---------------------------------------------------------------------\n'
+printf '%-12s | %-12s | %-10s | %-30s\n' "frontend" "built" "-" "$frontend_path (serve statically)"
+printf '%-12s | %-12s | %-10s | %-30s\n' "backend" "built" "$backend_port" "start: cd backend && npm start"
+printf '%-12s | %-12s | %-10s | %-30s\n' "health" "ready" "$backend_port" "curl http://localhost:'$backend_port'/health"
+printf '---------------------------------------------------------------------\n'
+echo "[install] done. Serve frontend dist/ (nginx/any static server) and proxy /api -> http://localhost:${backend_port}."
