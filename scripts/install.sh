@@ -6,7 +6,6 @@ FRONT_DIR="$ROOT_DIR"
 BACK_DIR="$ROOT_DIR/backend"
 
 : "${PORT:=4000}"
-: "${CORS_ORIGIN:=http://localhost:5173}"
 : "${FRONT_PORT:=4173}"
 : "${DATA_FILE:=data/app.json}"
 : "${RUN_AS_USER:=$(id -un)}"
@@ -79,6 +78,15 @@ EOF
 install_node_if_missing
 ensure_node_version
 
+server_ip="$(hostname -I 2>/dev/null | awk '{print $1}')"
+if [[ -z "$server_ip" ]]; then
+  server_ip="$(ip route get 1.1.1.1 2>/dev/null | awk '/src/ {print $7; exit}')"
+fi
+if [[ -z "$server_ip" ]]; then
+  server_ip="localhost"
+fi
+: "${CORS_ORIGIN:=http://${server_ip}:${FRONT_PORT}}"
+
 echo "[install] installing frontend deps..."
 cd "$FRONT_DIR"
 npm install
@@ -114,13 +122,6 @@ if [[ -f "$BACK_DIR/.env" ]]; then
 fi
 
 frontend_path="$FRONT_DIR/dist"
-server_ip="$(hostname -I 2>/dev/null | awk '{print $1}')"
-if [[ -z "$server_ip" ]]; then
-  server_ip="$(ip route get 1.1.1.1 2>/dev/null | awk '/src/ {print $7; exit}')"
-fi
-if [[ -z "$server_ip" ]]; then
-  server_ip="localhost"
-fi
 
 maybe_systemd=0
 if command -v systemctl >/dev/null 2>&1; then
