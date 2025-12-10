@@ -90,6 +90,7 @@ echo "[install] installing static server (serve)..."
 if ! command -v serve >/dev/null 2>&1; then
   npm install -g serve
 fi
+SERVE_BIN="$(command -v serve || echo serve)"
 
 echo "[install] installing backend deps..."
 cd "$BACK_DIR"
@@ -152,7 +153,7 @@ After=network.target
 Type=simple
 User=$RUN_AS_USER
 WorkingDirectory=$FRONT_DIR
-ExecStart=/usr/bin/env bash -c 'cd "$FRONT_DIR" && serve -s "$frontend_path" -l $FRONT_PORT'
+ExecStart=/usr/bin/env bash -c 'cd "$FRONT_DIR" && ${SERVE_BIN} -s "$frontend_path" -l $FRONT_PORT'
 Restart=always
 RestartSec=3
 
