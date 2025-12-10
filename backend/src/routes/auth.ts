@@ -1,8 +1,8 @@
 import rateLimit from 'express-rate-limit'
 import { Router } from 'express'
-import { authGuard, type AuthedRequest } from '../middleware/auth'
-import { issueToken, verifyCredentials } from '../services/authService'
-import { loadData } from '../services/store'
+import { authGuard, type AuthedRequest } from '../middleware/auth.js'
+import { issueToken, verifyCredentials } from '../services/authService.js'
+import { loadData } from '../services/store.js'
 
 const router = Router()
 

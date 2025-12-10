@@ -1,8 +1,8 @@
 import cors from 'cors'
 import express from 'express'
 import helmet from 'helmet'
-import { config, validateConfig } from './config'
-import { router as api } from './routes/index'
+import { config, validateConfig } from './config.js'
+import { router as api } from './routes/index.js'
 
 validateConfig()
 

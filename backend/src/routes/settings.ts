@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import { authGuard } from '../middleware/auth'
-import { loadData, saveData } from '../services/store'
+import { authGuard } from '../middleware/auth.js'
+import { loadData, saveData } from '../services/store.js'
 
 const router = Router()
 

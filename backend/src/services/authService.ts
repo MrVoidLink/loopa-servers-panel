@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { config } from '../config'
-import { loadData, saveData, StoredUser } from './store'
+import { config } from '../config.js'
+import { loadData, saveData, StoredUser } from './store.js'
 
 export type JwtPayload = { username: string }
 

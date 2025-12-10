@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import { createInitialUser } from '../services/authService'
-import { loadData, saveData } from '../services/store'
+import { createInitialUser } from '../services/authService.js'
+import { loadData, saveData } from '../services/store.js'
 
 const router = Router()
 

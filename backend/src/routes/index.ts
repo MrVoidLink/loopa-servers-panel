@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import { authRouter } from './auth'
-import { envVarsRouter } from './envVars'
-import { settingsRouter } from './settings'
-import { setupRouter } from './setup'
+import { authRouter } from './auth.js'
+import { envVarsRouter } from './envVars.js'
+import { settingsRouter } from './settings.js'
+import { setupRouter } from './setup.js'
 
 const router = Router()
 

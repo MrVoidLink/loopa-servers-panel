@@ -14,9 +14,9 @@ import { RequireSetup } from '../auth/RequireSetup'
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
       <Route element={<RequireSetup />}>
         <Route path="/setup" element={<SetupPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route element={<AppShell />}>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route element={<RequireAuth />}>
